@@ -20,10 +20,17 @@ x_train,x_test,y_train,y_test,Scaler,Encoder,Pca=Data_Cleaner(x,y,x_columns)
 
 #Chose XGB as it gave better metric scores
 #Model parameters were found with help of RandomizedSearchCV
+<<<<<<< HEAD
 model=XGBClassifier(colsample_bytree=np.float64(0.8738286191519333), gamma=np.float64(0.043934055621328405),\
                 learning_rate= np.float64(0.05164743203260611), max_depth=11, min_child_weight=1,\
                 n_estimators= 314, reg_alpha= np.float64(0.5956387406078443), reg_lambda= np.float64(0.5715761885501583),\
                 subsample= np.float64(0.7647363656589075))
+=======
+model=XGBClassifier(colsample_bytree=np.float64(0.8950004992438994), gamma=np.float64(0.22610897044490358),\
+                learning_rate= np.float64(0.07738144688199458), max_depth=14, min_child_weight=3,\
+                n_estimators= 231, reg_alpha= np.float64(0.1763869865062233), reg_lambda= np.float64(0.5983677727394797),\
+                subsample= np.float64(0.7675701798018192))
+>>>>>>> 7134fa1 (Last commit)
 
 model.fit(x_train,y_train)
 

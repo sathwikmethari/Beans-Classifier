@@ -1,6 +1,10 @@
 pandas
+<<<<<<< HEAD
 scikit
 pickle
+=======
+scikit-learn
+>>>>>>> 7134fa1 (Last commit)
 numpy
 matplotlib
 seaborn
