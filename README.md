@@ -28,3 +28,13 @@ Found *n_components* parameter for PCA such that maximum variance is captured wh
 ###
 Used most of the classfiers from sklearn library and xgboost and trained them on the dataset and tested for performannce.<br>
 Selected XGBClassifier as final model as it produced the highest scores, further tuned the parameters using RandomizedSearchCV.
+###
+# Running
+###
+Download the Zip file and extract the classifier.<br>
+1. *Windows* While in the Beans Classifier-main folder, type cmd in the search bar and press enter.<br>
+2.  Via the prompt(pip), we need to install required libraries. For that write<br>
+    *pip install -r requirements.txt* and press enter.<br>
+3.  After installation of libraries, run the application.py by typing<br>
+    *python application.py*
+4. Click on the link(*http://127.0.0.1:5000*) or copy paste it in web browser.
