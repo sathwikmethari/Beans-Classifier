@@ -6,50 +6,51 @@ from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 
 
-def outlier_replacer(data):                     #Replaces Outliers with median
-    x=data.iloc[:,:-1].values                   #Independent varibles Array
-    y=data.iloc[:,-1].values                    #Deoendent varible Array
-
-    num_columns=len(x[0])                       #finding no of columns of Independent variables
-    num_rows=len(x)                             #finding no of rows
+def bounds(data):                     #Replaces Outliers with median
 
     data_num= data.select_dtypes(exclude='object')  #Numerical DataFrame
-    cols=[x for x in data_num.columns]              #List containg all Numerical column names
+    num_columns=[x for x in data_num.columns]              #List containg all Numerical column names
 
-    '''print('Columns list \n',cols)
-    '''
-    IQR=[0]*num_columns                         #Creating empty 0 lists for interquartile ranges, lower bounds and upper bounds of Independent Variables
-    l_bound=[0]*num_columns
-    u_bound=[0]*num_columns
+    print('Columns list \n',num_columns)
     
-    for a in range(num_columns):
-        IQR[a]=float(data[cols[a]].quantile(0.75))-float(data[cols[a]].quantile(0.25))
-    for b in range(num_columns):
-        l_bound[b]=float(data[cols[b]].quantile(0.25))-1.5*IQR[b]
-    for c in range(num_columns):
-        u_bound[c]=float(data[cols[c]].quantile(0.75))+1.5*IQR[c]
-    '''
-    print('\nInter_Quartile_Range list \n',IQR)
-    print('\n Lower_Bound list \n',l_bound)
-    print('\nUpper_Bound list \n',u_bound)
-    '''
+    IQR={}                         #Creating empty dicts for interquartile ranges, lower bounds and upper bounds of Independent Variables
+    l_bound={}
+    u_bound={}
     
-    median_list=[float(x) for x in data[cols].median()]      #list has medians of all independent varibles
-    
-    '''print('\nMedian list \n',median_list)
-    '''                    
-    
-    for i in range(num_rows):                               #Replacing ouliers with median
-        for j in range(num_columns):
-            if l_bound[j]>x[i][j] or u_bound[j]<x[i][j]:
-                x[i][j]=median_list[j]
-            else:
-                pass
-    return x,y,cols                                              #Returns Independent and Dependent variables
-    
+    for a in num_columns:
+        IQR[a]=float(data[a].quantile(0.75))-float(data[a].quantile(0.25))
 
+        l_bound[a]=float(data[a].quantile(0.25))-1.5*IQR[a]
+ 
+        u_bound[a]=float(data[a].quantile(0.75))+1.5*IQR[a]
+    
+    print('\nInter_Quartile_Range Dict \n',IQR)
+    print('\n Lower_Bound Dict \n',l_bound)
+    print('\nUpper_Bound Dict \n',u_bound)
+    
+    
+    median_dict=(data[num_columns].median()).to_dict()      #dict has medians of all independent varibles
+    
+    print('\nMedian Dict \n',median_dict)
 
-def Data_Cleaner(x,y,x_cols):
+    return l_bound, u_bound, median_dict, num_columns
+
+def replacer_main(data,l_bound, u_bound, median_dict, num_columns):
+
+    def replacer(row, l_bound, u_bound, median_dict, num_columns):
+        for col in num_columns:
+            if row[col] > u_bound[col] or row[col] < l_bound[col]:
+                row[col] = median_dict[col]  # Replace with median if out of bounds
+        return row
+      
+    df = data.apply(lambda row: replacer(row, l_bound, u_bound, median_dict, num_columns), axis=1)
+    x=df.select_dtypes(exclude='O')
+    y=df.iloc[:,-1].values
+    x_cols=[i for i in x.columns]
+    print(y,x_cols)
+    return x,y,x_cols                                
+
+def data_cleaner(x,y,x_cols):
     sm = SMOTE()                                            #Using SMOTE from imblearn to resample Imbalanced Data
     x_res, y_res = sm.fit_resample(x, y)
 
@@ -63,18 +64,18 @@ def Data_Cleaner(x,y,x_cols):
     y_train=Encoder.fit_transform(y_train)                  #Label Encoding categorical values
     y_test=Encoder.transform(y_test)
 
-    df_xtrain=pd.DataFrame(x_train,columns=x_cols)          #turning into dataframes to fit to pca
-    df_xtest=pd.DataFrame(x_test,columns=x_cols)
+    #df_xtrain=pd.DataFrame(x_train,columns=x_cols)          #turning into dataframes to fit to pca
+    #df_xtest=pd.DataFrame(x_test,columns=x_cols)
     pca=PCA()
-    pca.fit(df_xtrain)
+    pca.fit(x_train)
 
     cumulative_explained_variance = np.cumsum(pca.explained_variance_ratio_) #finding number of components required,
     explained_variance = pca.explained_variance_ratio_                          #  while getting maximum variance
     n_components_required = np.argmax(cumulative_explained_variance >= 0.95) + 1 
-    print(n_components_required)
+    print(n_components_required,type(x_res),type(y_res))
 
     pca=PCA(n_components=n_components_required)             #recalibrating pca after knowing number of components required
-    x_train_pca=pca.fit_transform(df_xtrain)
-    x_test_pca=pca.transform(df_xtest)
-
-    return x_train_pca,x_test_pca,y_train,y_test,scaler,Encoder,pca #returning required objects
+    x_train_pca=pca.fit_transform(x_train)
+    x_test_pca=pca.transform(x_test)
+  
+    return x_train_pca,x_test_pca,y_train,y_test,scaler,Encoder,pca #returning required objects   
