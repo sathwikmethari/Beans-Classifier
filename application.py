@@ -9,14 +9,15 @@ from xgboost import XGBClassifier
 
 data=pd.read_excel('Dry_Bean_Dataset.xlsx')         #Reading the dataset
 
-from Data_Cleaning import outlier_replacer          #Importing a function from .py file       
+from Data_Cleaning import bounds,replacer_main,data_cleaner       #Importing a function from .py file       
 from Data_Cleaning2 import Data_Cleaner             #Importing a function from .py file
 
 #Calling imported functions for preprocessing
 #This f'n replaces outliers with median and returns updated x,y and xcolumn names
-x,y,x_columns=outlier_replacer(data)
-#This f'n resamples the data, scales and encodes the data, applies Dimensionality reduction(PCA) on it.                                  
-x_train,x_test,y_train,y_test,Scaler,Encoder,Pca=Data_Cleaner(x,y,x_columns)    
+l_bound, u_bound, median_dict, num_columns=bounds(data)
+x,y,x_cols=replacer_main(data,l_bound, u_bound, median_dict, num_columns)
+#This f'n resamples the data, scales and encodes the data, applies Dimensionality reduction(PCA) on it.                                      
+x_train,x_test,y_train,y_test,Scaler,Encoder,Pca=data_cleaner(x,y,x_cols)
 
 #Chose XGB as it gave better metric scores
 #Model parameters were found with help of RandomizedSearchCV
