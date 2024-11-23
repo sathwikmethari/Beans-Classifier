@@ -65,7 +65,7 @@ def predict():
 
 
     return render_template('predict.html', errors=errors, input_list=Input_dict, columns=x_cols,\
-                            l=len(x_columns),output=output[0])
+                            l=len(x_cols),output=output[0])
 
 if __name__=='__main__':
     app.run(debug=True)
