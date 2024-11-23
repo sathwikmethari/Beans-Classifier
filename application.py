@@ -48,7 +48,7 @@ def home():
 def predict():
     errors=[]
     if request.method=='POST':
-        for column in x_columns:
+        for column in x_cols:
             try:
                 Input_dict[column]=float(request.form.get(column))
             
