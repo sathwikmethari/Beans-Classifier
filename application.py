@@ -34,7 +34,7 @@ model=XGBClassifier(colsample_bytree=np.float64(0.8950004992438994), gamma=np.fl
 model.fit(x_train,y_train)
 
 Input_dict=dict()                                        #Empty Dictionary,that we use to get inputs from html page
-for column in x_columns:
+for column in x_cols:
     Input_dict[column]=0
 output=['Result']
 
