@@ -64,7 +64,7 @@ def predict():
         output[0]=Encoder.inverse_transform(model.predict(Input_array))[0]
 
 
-    return render_template('predict.html', errors=errors, input_list=Input_dict, columns=x_columns,\
+    return render_template('predict.html', errors=errors, input_list=Input_dict, columns=x_cols,\
                             l=len(x_columns),output=output[0])
 
 if __name__=='__main__':
